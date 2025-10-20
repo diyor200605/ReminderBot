@@ -13,7 +13,7 @@ from database import get_focus_stats
 
 logging.basicConfig(level=logging.INFO)
 
-API_TOKEN = '8095807426:AAEaZh6Sg6fFaFf_xmU9RuNp6Q-vc37CmBg'
+API_TOKEN = ''
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
@@ -112,7 +112,6 @@ async def start_focus_session(message: types.Message):
 async def stop_focus_session(message: types.Message):
     user_id = message.from_user.id
     start = user_start_time.get(user_id)
-
     if not start:
         await message.answer("❗️ Таймер не запущен. Нажми Старт✅.", reply_markup=kb_focus)
         return
@@ -121,16 +120,13 @@ async def stop_focus_session(message: types.Message):
     duration = end - start
     hours, remainder = divmod(int(duration.total_seconds()), 3600)
     minutes, seconds = divmod(remainder, 60)
-
-
-    save_focus_session(user_id, start, end)
-
-    del user_start_time[user_id]
-
     await message.answer(
         f"✅ Сессия завершена!\n⏰ Продолжительность: {hours}ч {minutes}м {seconds}с",
         reply_markup=kb_main
     )
+    save_focus_session(user_id, start, end)
+    del user_start_time[user_id]
+
 
 @router.message(F.text == "Назад🔙")
 async def back_to_main(message: types.Message):
